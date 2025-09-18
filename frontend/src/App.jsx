@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import QueryForm from "components/QueryForm";
 
 import RtlLayout from "layouts/rtl";
 import AdminLayout from "layouts/admin";
@@ -10,7 +11,8 @@ const App = () => {
       <Route path="auth/*" element={<AuthLayout />} />
       <Route path="admin/*" element={<AdminLayout />} />
       <Route path="rtl/*" element={<RtlLayout />} />
-      <Route path="/" element={<Navigate to="/admin" replace />} />
+      <Route path="/" element={<QueryForm />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
