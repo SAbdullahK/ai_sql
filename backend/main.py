@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from agents.query_generator import query_generator
 from agents.validator import query_validator
 from agents.security import security_agent
@@ -7,6 +8,7 @@ from agents.executor import query_executor
 from agents.answer_formatter import answer_formatter
 
 app = Flask(__name__)
+CORS(app)
 
 def multi_agent_system(user_query: str, schema: str, db_path: str = "db/employees.db"):
     sql_query = query_generator(user_query,schema)
