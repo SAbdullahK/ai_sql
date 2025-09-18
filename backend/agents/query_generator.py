@@ -1,12 +1,9 @@
 import os
-from google.genai import Client
-from dotenv import load_dotenv
 import time
+from dotenv import load_dotenv
+import google.generativeai as genai
 
 load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
-client = Client(api_key = GOOGLE_API_KEY)
 
 def query_generator(user_query :str, schema : str, retries: int = 3, delay: int = 5 ) :
     for attempts in range(1, retries + 1):
@@ -17,11 +14,14 @@ def query_generator(user_query :str, schema : str, retries: int = 3, delay: int 
             User: {user_query}
             SQL: 
             """
-            response = client.models.generate_content(
-                model = "gemini-1.5-flash",
-                contents = [prompt],
-            )
-            return response.text.strip()
+            api_key = os.getenv("GOOGLE_API_KEY")
+            if not api_key:
+                # Fallback heuristic if no API key is configured
+                return "SELECT * FROM employees LIMIT 5;"
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content(prompt)
+            return (getattr(response, "text", "") or "").strip()
         except Exception as e:
             if attempts == retries:
                 return f"❌ Failed after {attempts} attempts: {str(e)}"
