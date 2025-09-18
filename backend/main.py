@@ -8,7 +8,7 @@ from agents.answer_formatter import answer_formatter
 
 app = Flask(__name__)
 
-def multi_agent_system(user_query : str, schema : str, db_path = "db/employees.db"):
+def multi_agent_system(user_query: str, schema: str, db_path: str = "db/employees.db"):
     sql_query = query_generator(user_query,schema)
     print("📝 Generated SQL: ", sql_query)
 
@@ -16,7 +16,7 @@ def multi_agent_system(user_query : str, schema : str, db_path = "db/employees.d
     print("✅ Validated SQL: ", validated_sql)
 
     safe_sql = security_agent(validated_sql)
-    if "❌" in safe_sql:
+    if isinstance(safe_sql, str) and "❌" in safe_sql:
         return safe_sql
     print("🔒 Safe SQL: ", safe_sql)
 
@@ -30,7 +30,7 @@ def multi_agent_system(user_query : str, schema : str, db_path = "db/employees.d
     return final_answer
 
 
-# Flask API endopint
+# Flask API endpoint
 @app.route("/ask", methods=["POST"])
 def ask_sql():
     data = request.get_json()
@@ -47,10 +47,8 @@ def ask_sql():
     """
 
     answer = multi_agent_system(user_query, schema)
-    return jsonify({
-        "answer" : answer
-    })
+    return jsonify({"answer": answer})
 
 
-if __name__ == "__main__" :
-    app.run(debug = True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
